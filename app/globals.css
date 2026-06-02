@@ -1,0 +1,618 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-serif-text: var(--font-serif-text);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-sans {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+.font-serif {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+  font-optical-sizing: auto;
+}
+.font-serif-text {
+  font-family: var(--font-serif-text), ui-serif, Georgia, serif;
+  font-optical-sizing: auto;
+}
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+::selection {
+  background: rgba(167, 139, 250, 0.25);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Theme-driven thin scrollbar — colors come from CSS vars set inline by the
+   parent (so each theme can tint thumb/hover with its own accent/border).
+   Used by the project case-study chapter rail. */
+.themed-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb, rgba(120,120,120,0.4)) transparent;
+  scrollbar-gutter: stable;
+}
+.themed-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.themed-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.themed-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb, rgba(120,120,120,0.4));
+  border-radius: 9999px;
+  transition: background 120ms ease;
+}
+.themed-scrollbar:hover::-webkit-scrollbar-thumb,
+.themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover, var(--sb-thumb, rgba(120,120,120,0.6)));
+}
+.themed-scrollbar::-webkit-scrollbar-corner { background: transparent; }
+/* Kill the native arrow buttons (Chromium on Linux/GTK shows them by
+   default and they break the slim themed look). */
+.themed-scrollbar::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ──────────── Per-theme scrollbar paint ──────────── */
+/* The base .themed-scrollbar uses a CSS-var thumb color, but in practice
+   the rail looked grey-on-grey because the inline-style fallback wasn't
+   distinctive enough. These rules repaint the rail per theme so it reads
+   on-brand. Scoped via the theme class on each theme's <article>. */
+
+/* Star Wars — cyan thumb with a soft glow on the dark void background */
+.theme-starwars .themed-scrollbar {
+  scrollbar-color: rgba(90,242,255,0.65) transparent;
+}
+.theme-starwars .themed-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.theme-starwars .themed-scrollbar::-webkit-scrollbar-track {
+  background: rgba(90,242,255,0.06);
+}
+.theme-starwars .themed-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(90,242,255,0.6);
+  box-shadow: 0 0 6px rgba(90,242,255,0.45);
+  border-radius: 9999px;
+}
+.theme-starwars .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(90,242,255,0.9);
+  box-shadow: 0 0 10px rgba(90,242,255,0.7);
+}
+
+/* Terminal — blocky white bar, square corners, gutter rule on the left */
+.theme-terminal .themed-scrollbar {
+  scrollbar-color: rgba(255,255,255,0.4) rgba(255,255,255,0.05);
+}
+.theme-terminal .themed-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.theme-terminal .themed-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-left: 1px solid rgba(255,255,255,0.12);
+}
+.theme-terminal .themed-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.4);
+  border-radius: 0;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.theme-terminal .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.6);
+  background-clip: padding-box;
+}
+
+/* Notion — soft notion-grey, padded thumb */
+.theme-notion .themed-scrollbar {
+  scrollbar-color: rgba(55,53,47,0.3) transparent;
+}
+.theme-notion .themed-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.theme-notion .themed-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(55,53,47,0.28);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.theme-notion .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(55,53,47,0.5);
+  background-clip: padding-box;
+}
+
+/* VSCode-style thin, dark scrollbar — used inside the dark/terminal themes */
+.vscode-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(121,121,121,0.45) transparent; }
+.vscode-scrollbar::-webkit-scrollbar { height: 10px; width: 10px; }
+.vscode-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.vscode-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(121,121,121,0.4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 0;
+}
+.vscode-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(100,100,100,0.75); background-clip: padding-box; border: 2px solid transparent; }
+.vscode-scrollbar::-webkit-scrollbar-corner { background: transparent; }
+
+/* ──────────── Star Wars animations ──────────── */
+@keyframes sw-twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+@keyframes sw-crawl {
+  from { transform: translateY(100%); }
+  to { transform: translateY(-115%); }
+}
+@keyframes sw-tie-flyby {
+  0% { transform: translate3d(-25vw, 30%, 0) rotate(2deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate3d(120vw, -10%, 0) rotate(-2deg); opacity: 0; }
+}
+@keyframes sw-holo-flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 1; }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.4; }
+}
+@keyframes sw-holo-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+@keyframes sw-yoda-walk-in {
+  0% { transform: translateX(-30%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes sw-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 20px rgba(255, 232, 31, 0.5),
+      0 0 60px rgba(255, 232, 31, 0.2);
+  }
+  50% {
+    text-shadow:
+      0 0 30px rgba(255, 232, 31, 0.8),
+      0 0 100px rgba(255, 232, 31, 0.35);
+  }
+}
+@keyframes sw-saber-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 232, 31, 0.5), 0 0 30px rgba(255, 232, 31, 0.25); }
+  50% { box-shadow: 0 0 20px rgba(255, 232, 31, 0.8), 0 0 50px rgba(255, 232, 31, 0.4); }
+}
+@keyframes sw-saber-extend {
+  0% { transform: scaleX(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+@keyframes sw-saber-ignite {
+  0% { transform: scaleX(0); }
+  60% { transform: scaleX(1.04); }
+  100% { transform: scaleX(1); }
+}
+@keyframes sw-saber-ignite-vert {
+  0% { transform: scaleY(0); }
+  60% { transform: scaleY(1.04); }
+  100% { transform: scaleY(1); }
+}
+@keyframes sw-saber-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes sw-saber-spin3d {
+  from { transform: rotateX(12deg) rotateY(0deg); }
+  to   { transform: rotateX(12deg) rotateY(360deg); }
+}
+@keyframes sw-vader-aura {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 4px rgba(220, 30, 30, 0.55))
+      drop-shadow(0 0 14px rgba(180, 20, 20, 0.35));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 7px rgba(240, 50, 50, 0.7))
+      drop-shadow(0 0 22px rgba(200, 30, 30, 0.5));
+  }
+}
+@keyframes sw-fly {
+  0% { transform: translate3d(-15vw, 30%, 0) rotate(-4deg); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translate3d(115vw, -20%, 0) rotate(-2deg); opacity: 0; }
+}
+@keyframes sw-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes sw-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes sw-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@keyframes sw-engine {
+  0%, 100% { opacity: 0.7; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.15); }
+}
+
+.sw-twinkle { animation: sw-twinkle 3s ease-in-out infinite; }
+.sw-crawl {
+  animation-name: sw-crawl;
+  animation-duration: 140s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* Pre-roll: the headline should be just emerging from the lower half
+     of the mask when the user lands on the page, so the visitor reads
+     "rising from below" instead of "already mid-scroll". Tuned by trial
+     — smaller offsets leave the page empty for a few seconds before
+     anything rose into view; bigger offsets show a full paragraph plus
+     the start of the next and kill the cinematic feel. */
+  animation-delay: -50s;
+  animation-fill-mode: backwards;
+}
+/* Mobile cycles LONGER than desktop because the crawl text is much taller on
+   narrow viewports (more line wraps), so the same %-based translation has to
+   cover more pixels — at the desktop pace mobile reads too fast. Pre-roll
+   scales proportionally so the headline lands inside the opaque band as soon
+   as the IntersectionObserver un-pauses the animation. */
+@media (max-width: 768px) {
+  .sw-crawl {
+    animation-duration: 210s;
+    /* Mobile content is ~3× taller than desktop (line wraps), so the
+       same %-progress lands the text-top much further inside the
+       container. Dial back so the headline is the only block in view
+       on landing instead of the headline + a full paragraph + the
+       start of the next. */
+    animation-delay: -93s;
+  }
+}
+.sw-glow { animation: sw-glow 4s ease-in-out infinite; }
+.sw-saber-pulse { animation: sw-saber-pulse 2.5s ease-in-out infinite; }
+.sw-saber-extend { animation: sw-saber-ignite 1.4s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; transform-origin: left center; }
+.sw-saber-extend-vert { animation: sw-saber-ignite-vert 1.4s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; transform-origin: bottom center; }
+.sw-saber-spin { animation: sw-saber-spin 6.5s linear infinite; transform-origin: center center; }
+.sw-saber-spin3d {
+  animation: sw-saber-spin3d 6s linear infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.sw-vader-aura { animation: sw-vader-aura 3.4s ease-in-out infinite; }
+.sw-fly { animation: sw-fly 28s linear infinite; }
+.sw-float { animation: sw-float 3.5s ease-in-out infinite; }
+.sw-orbit { animation: sw-orbit 30s linear infinite; }
+.sw-blink { animation: sw-blink 1.4s ease-in-out infinite; }
+.sw-engine { animation: sw-engine 0.6s ease-in-out infinite; }
+.sw-tie-flyby { animation: sw-tie-flyby 7s cubic-bezier(0.25, 0.1, 0.55, 1) forwards; }
+.sw-holo {
+  color: #5af2ff;
+  text-shadow: 0 0 6px #5af2ff, 0 0 18px rgba(90,242,255,0.6);
+  animation: sw-holo-flicker 4s steps(60) infinite;
+}
+.sw-holo-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(90,242,255,0) 0,
+    rgba(90,242,255,0) 2px,
+    rgba(90,242,255,0.18) 3px,
+    rgba(90,242,255,0) 4px
+  );
+}
+.sw-holo-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(90,242,255,0.2) 50%,
+    transparent 100%
+  );
+  height: 30%;
+  animation: sw-holo-scan 3s linear infinite;
+}
+.sw-yoda-walk-in { animation: sw-yoda-walk-in 1.4s ease-out forwards; }
+
+/* ──────────── Star field with scroll-driven hyperspace streaking ──────────── */
+.sw-stars { isolation: isolate; }
+.sw-star {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.sw-star-dot,
+.sw-star-tail {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  border-radius: 9999px;
+}
+.sw-star-dot {
+  width: var(--r);
+  height: var(--r);
+  margin-left: calc(var(--r) / -2);
+  margin-top: calc(var(--r) / -2);
+  background: radial-gradient(
+    circle at center,
+    var(--c, #fff) 0%,
+    var(--c, #fff) 30%,
+    transparent 75%
+  );
+  opacity: var(--op, 0.6);
+}
+.sw-star-tail {
+  width: var(--r);
+  height: 19vmax;
+  margin-left: calc(var(--r) / -2);
+  background: linear-gradient(
+    180deg,
+    var(--c, #fff) 0%,
+    var(--c, #fff) 10%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform-origin: 50% 0;
+  transform: scaleY(calc(var(--streak, 0) * var(--streak-dir, 1)));
+  opacity: calc(var(--op, 0.6) * 0.7);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-twinkle, .sw-crawl, .sw-glow, .sw-saber-pulse,
+  .sw-saber-extend, .sw-saber-extend-vert, .sw-saber-spin, .sw-saber-spin3d,
+  .sw-vader-aura,
+  .sw-fly, .sw-float, .sw-orbit, .sw-blink, .sw-engine,
+  .sw-tie-flyby, .sw-holo, .sw-holo-sweep, .sw-yoda-walk-in {
+    animation: none;
+  }
+  .sw-star-tail { display: none; }
+}
+
+/* ──────────── Blog markdown prose ──────────── */
+.prose-cv {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: inherit;
+}
+.prose-cv h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 2.5rem 0 1rem;
+  line-height: 1.15;
+}
+.prose-cv h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 2.25rem 0 0.75rem;
+  line-height: 1.2;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 0.4rem;
+}
+.prose-cv h3 {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 1.75rem 0 0.5rem;
+}
+.prose-cv h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 1.25rem 0 0.4rem;
+}
+.prose-cv p {
+  margin: 0.75rem 0;
+}
+.prose-cv a {
+  color: #7c3aed;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-cv strong {
+  font-weight: 700;
+}
+.prose-cv em {
+  font-style: italic;
+}
+.prose-cv ul,
+.prose-cv ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+.prose-cv ul {
+  list-style: disc;
+}
+.prose-cv ol {
+  list-style: decimal;
+}
+.prose-cv li {
+  margin: 0.25rem 0;
+}
+.prose-cv li > ul,
+.prose-cv li > ol {
+  margin: 0.25rem 0;
+}
+.prose-cv blockquote {
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.04);
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+}
+.prose-cv code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  padding: 0.15rem 0.35rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+}
+.prose-cv pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #0d1117;
+  color: #e6edf3;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.prose-cv pre code {
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+}
+.prose-cv hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  margin: 2rem 0;
+}
+.prose-cv table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+  font-size: 14px;
+}
+.prose-cv th,
+.prose-cv td {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.prose-cv th {
+  background: rgba(0, 0, 0, 0.04);
+  font-weight: 700;
+}
+.prose-cv img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.prose-cv--dark h2 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.prose-cv--dark a {
+  color: #60a5fa;
+}
+.prose-cv--dark blockquote {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+}
+.prose-cv--dark code {
+  background: rgba(255, 255, 255, 0.08);
+}
+.prose-cv--dark hr {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.prose-cv--dark th,
+.prose-cv--dark td {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.prose-cv--dark th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ──────────── Print → PDF (target: 2 pages max) ──────────── */
+@media print {
+  html,
+  body {
+    background: white !important;
+    color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 11pt;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  /* Trick: US Legal (216×356mm) is ~20% taller than A4 — fits more content
+     into the same page count without looking weird in PDF viewers. Vertical
+     margin stays tight (6mm) to claw back lines; horizontal is 12mm so the
+     content doesn't look glued to the page edges. */
+  @page {
+    size: 216mm 356mm;
+    margin: 6mm 12mm;
+  }
+
+  /* Per-card break-inside is set on individual elements (e.g. each Experience
+     article). Avoid putting it on <section> — full sections like Experience
+     are taller than a page, and forcing avoid pushes the whole block to the
+     next page, leaving a huge gap at the bottom of the previous one. */
+
+  h1, h2, h3 {
+    break-after: avoid;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Hide nav/toolbar/blog/courses-extras to keep the printed CV at ~2 pages */
+  main {
+    padding: 0 !important;
+  }
+
+  /* Tighten common spacing classes when printing */
+  .py-12 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+  .py-14 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+  .py-16 { padding-top: 1.75rem !important; padding-bottom: 1.75rem !important; }
+  .pt-24 { padding-top: 0 !important; }
+  .pb-24 { padding-bottom: 0 !important; }
+  .pb-20 { padding-bottom: 0 !important; }
+
+  /* Newsreader at body sizes (10-12px on print) is a touch thin; nudging the
+     weight axis makes the strokes hold up without reading as bold. Variable
+     font, so any value between 400-500 is valid. Used by the serif language
+     cards inside the Notion theme. */
+  .theme-notion .font-serif-text {
+    font-weight: 450;
+  }
+  .theme-notion .font-serif-text em,
+  .theme-notion .font-serif-text i,
+  .theme-notion .font-serif-text.italic,
+  .theme-notion .italic.font-serif-text {
+    font-weight: 450;
+  }
+
+  /* Theme-specific flatten */
+  .theme-dark      { border-radius: 0 !important; border: none !important; }
+  .theme-swiss     { box-shadow: none !important; }
+  .theme-newspaper { box-shadow: none !important; }
+  .theme-notion    { box-shadow: none !important; }
+  .theme-terminal  { box-shadow: none !important; }
+  .theme-starwars  { box-shadow: none !important; }
+}
+
+/* No-flash dark mode for /blog. The inline script in app/blog/layout.tsx
+ * toggles `html.dark` BEFORE React hydrates so the first paint matches
+ * the user's persisted theme. These rules paint the surface dark while
+ * React still has the "light by default" SSR state; BlogShell's own
+ * effect then keeps the class in sync (and removes it on unmount, so
+ * the class never bleeds into non-blog routes). `.blog-shell` carries
+ * !important because Tailwind's `bg-white` utility otherwise wins the
+ * cascade. */
+html.dark,
+html.dark body {
+  background-color: #1c1923;
+}
+html.dark .blog-shell {
+  background-color: #1c1923 !important;
+  color: #f4f4f5;
+}

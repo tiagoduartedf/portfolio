@@ -1,0 +1,3 @@
+- explicar o conceito de cache e como funciona
+- React Query no front
+- Redis pra cache no back

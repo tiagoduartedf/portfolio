@@ -1,34 +1,42 @@
 import React from "react";
-import { withBase } from "./basePath";
 
-/** Split a paragraph on the literal token `/blog` and replace each occurrence
- *  with an anchor that opens the local /blog route in a new tab. Used by the
- *  CV themes so the "/blog of this site" mention in the About summary becomes
- *  a real link without changing `cv.summary` to a structured node type. The
- *  `color` opt matches each theme's accent/link color so the URL reads as
- *  clickable in context (same hue used for company names in experience).
- *  `href` is a raw `<a>` (not `next/link`) because the link opens in a new
- *  tab, so we prefix the basePath manually. */
+/** Wrap inline `https?://` URLs in the given paragraph with anchors that
+ *  open in a new tab. Used by the CV themes so an URL mention in the
+ *  About summary becomes a real link without changing `cv.summary` to a
+ *  structured node type. The `color` opt matches each theme's accent/link
+ *  color so the URL reads as clickable in context (same hue used for
+ *  company names in experience). `href` is a raw `<a>` (not `next/link`)
+ *  because the link is external/absolute. */
 export function linkifyBlog(text: string, color?: string): React.ReactNode {
-  const parts = text.split("/blog");
-  if (parts.length === 1) return text;
+  const URL_RE = /https?:\/\/[^\s,)]+/g;
+  const matches = [...text.matchAll(URL_RE)];
+  if (matches.length === 0) return text;
   const nodes: React.ReactNode[] = [];
-  parts.forEach((part, i) => {
-    if (i > 0) {
+  let lastIdx = 0;
+  matches.forEach((m, i) => {
+    const url = m[0];
+    const start = m.index ?? 0;
+    if (start > lastIdx) {
       nodes.push(
-        <a
-          key={`b-${i}`}
-          href={withBase("/blog")}
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium underline underline-offset-2 hover:no-underline"
-          style={color ? { color } : undefined}
-        >
-          /blog
-        </a>,
+        <React.Fragment key={`t-${i}`}>{text.slice(lastIdx, start)}</React.Fragment>,
       );
     }
-    if (part) nodes.push(<React.Fragment key={`t-${i}`}>{part}</React.Fragment>);
+    nodes.push(
+      <a
+        key={`u-${i}`}
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        className="font-medium underline underline-offset-2 hover:no-underline"
+        style={color ? { color } : undefined}
+      >
+        {url}
+      </a>,
+    );
+    lastIdx = start + url.length;
   });
+  if (lastIdx < text.length) {
+    nodes.push(<React.Fragment key="t-end">{text.slice(lastIdx)}</React.Fragment>);
+  }
   return nodes;
 }
